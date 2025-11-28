@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>HSCB lab Christmas Connections — Option A1</title>
+<style>
+  :root{--bg1:#07142d;--accent:#d946ef}
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:linear-gradient(180deg,var(--bg1),#052b46);color:#eef2ff;overflow-x:hidden}
+  .wrap{max-width:1024px;margin:28px auto;padding:18px;position:relative;z-index:3}
+  header{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+  .logo{width:72px;height:72px;border-radius:12px;background:linear-gradient(135deg,#ffdf7e,#ff7ab6);display:flex;align-items:center;justify-content:center;font-size:34px}
+  h1{margin:0;font-size:24px;color:white}
+  .subtitle{color:#c6f7ff;opacity:0.95;margin-top:6px;font-size:13px}
+  .board{display:grid;grid-template-columns:1fr 520px;gap:18px;margin-top:12px}
+  .panel{background:rgba(255,255,255,0.03);backdrop-filter:blur(6px);border-radius:14px;padding:14px;border:1px solid rgba(255,255,255,0.04)}
+  .tiles{display:flex;flex-wrap:wrap;gap:10px;padding:8px;min-height:78px}
+  .tile{padding:8px 14px;border-radius:999px;background:linear-gradient(180deg,#ffffff10,#ffffff06);border:1px solid rgba(255,255,255,0.06);cursor:grab;color:#fff;font-weight:700;box-shadow:0 6px 18px rgba(3,7,18,0.35);user-select:none}
+  .bins{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  .bin{min-height:140px;padding:12px;border-radius:10px;border:2px dashed rgba(255,255,255,0.06);background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));display:flex;flex-direction:column;gap:8px;position:relative}
+  .bin.solved{border-style:solid;background:linear-gradient(90deg,#072 10%, #053 100%);}
+  .bin-label{font-weight:800;color:#fff;margin-bottom:6px}
+  .controls{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  button{padding:9px 14px;border-radius:10px;border:0;background:var(--accent);color:white;font-weight:800;cursor:pointer}
+  button.secondary{background:transparent;border:1px solid rgba(255,255,255,0.08);color:#e6f6ff}
+  .small{font-size:13px;color:#cfeef7}
+  .result{margin-top:12px;padding:12px;border-radius:10px;font-weight:700}
+  .correct{background:linear-gradient(90deg,#052e14,#064e2f);color:#baf5d9}
+  .wrong{background:linear-gradient(90deg,#3b1f00,#5a2a00);color:#ffe8c2}
+
+  /* decorative megakaryocytes */
+  .decor{pointer-events:none;position:fixed;left:0;top:0;width:100%;height:100%;z-index:1;overflow:hidden}
+  .mega{position:absolute;top:-16vh;width:160px;height:160px;opacity:0.98;transform-origin:center;animation:drift 14s linear infinite;filter:drop-shadow(0 8px 18px rgba(0,0,0,0.35));}
+  .mega svg{width:100%;height:100%}
+  .m1{left:6%;animation-duration:15s;transform:scale(1.05) rotate(-6deg);}
+  .m2{left:20%;animation-duration:11s;transform:scale(0.95) rotate(8deg);}
+  .m3{left:36%;animation-duration:14s;transform:scale(1.15) rotate(-12deg);}
+  .m4{left:54%;animation-duration:10s;transform:scale(0.9) rotate(6deg);}
+  .m5{left:72%;animation-duration:13s;transform:scale(1.0) rotate(-4deg);}
+  .m6{left:88%;animation-duration:12s;transform:scale(1.08) rotate(10deg);}
+
+  @keyframes drift{
+    0%{transform:translateY(-16vh) rotate(0deg) scale(1); opacity:0.95}
+    50%{opacity:1; transform:translateY(36vh) rotate(40deg) scale(1.02)}
+    100%{transform:translateY(120vh) rotate(90deg) scale(0.98); opacity:0.9}
+  }
+
+  .confetti{pointer-events:none;position:fixed;left:0;top:0;width:100%;height:0;z-index:6;overflow:visible}
+  .confetti span{position:absolute;width:8px;height:12px;border-radius:2px;background:red;animation:conf 1.3s ease-out forwards;}
+  @keyframes conf{to{transform:translateY(120vh) rotate(360deg);opacity:0;}}
+</style>
+</head>
+<body>
+<div class="decor" aria-hidden="true">
+  <div class="mega m1" aria-hidden="true">
+    <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="megakaryocyte">
+      <defs>
+        <radialGradient id="mg1" cx="50%" cy="40%">
+          <stop offset="0%" stop-color="#fff0f0"/>
+          <stop offset="50%" stop-color="#ffdede"/>
+          <stop offset="100%" stop-color="#ffbfbf"/>
+        </radialGradient>
+      </defs>
+      <path d="M80 20 C60 18 40 28 30 44 C18 62 28 84 30 98 C34 118 52 130 74 132 C94 134 112 124 130 116 C146 108 150 92 144 74 C138 56 120 36 98 28 C90 24 84 22 80 20 Z" fill="url(#mg1)" stroke="#ff8b8b" stroke-width="2"/>
+      <g stroke="#ff8b8b" stroke-width="3" stroke-linecap="round">
+        <path d="M48 50 q-18 6 -26 20" fill="none"/>
+        <path d="M112 46 q22 10 30 26" fill="none"/>
+        <path d="M40 96 q-10 14 8 28" fill="none"/>
+        <path d="M120 96 q10 12 -6 28" fill="none"/>
+      </g>
+      <g transform="translate(54,60)">
+        <ellipse cx="20" cy="12" rx="18" ry="14" fill="#fff6f6" opacity="0.95" stroke="#ffdada" stroke-width="1"/>
+        <ellipse cx="42" cy="14" rx="20" ry="16" fill="#fff6f6" opacity="0.95" stroke="#ffdada" stroke-width="1"/>
+        <ellipse cx="30" cy="32" rx="16" ry="12" fill="#fff6f6" opacity="0.95" stroke="#ffdada" stroke-width="1"/>
+      </g>
+    </svg>
+  </div>
+  <div class="mega m2" aria-hidden="true">
+    <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="megakaryocyte">
+      <defs>
+        <radialGradient id="mg2" cx="50%" cy="40%">
+          <stop offset="0%" stop-color="#fff8e6"/>
+          <stop offset="60%" stop-color="#ffe6b3"/>
+          <stop offset="100%" stop-color="#ffd280"/>
+        </radialGradient>
+      </defs>
+      <path d="M80 18 C64 20 48 32 34 48 C20 66 26 86 34 102 C44 124 64 132 84 134 C106 136 126 128 138 112 C150 96 146 78 138 64 C130 48 110 30 92 24 C86 22 82 20 80 18 Z" fill="url(#mg2)" stroke="#ffb36a" stroke-width="2"/>
+      <g stroke="#ffb36a" stroke-width="3" stroke-linecap="round">
+        <path d="M44 54 q-16 6 -22 18" fill="none"/>
+        <path d="M116 50 q20 10 26 24" fill="none"/>
+      </g>
+      <g transform="translate(48,58)">
+        <ellipse cx="18" cy="14" rx="16" ry="12" fill="#fffaf0" opacity="0.95" stroke="#fff0d8" stroke-width="1"/>
+        <ellipse cx="36" cy="28" rx="18" ry="14" fill="#fffaf0" opacity="0.95" stroke="#fff0d8" stroke-width="1"/>
+      </g>
+    </svg>
+  </div>
+  <div class="mega m3" aria-hidden="true">
+    <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="megakaryocyte">
+      <defs>
+        <radialGradient id="mg3" cx="50%" cy="40%">
+          <stop offset="0%" stop-color="#f0fbff"/>
+          <stop offset="60%" stop-color="#d6f0ff"/>
+          <stop offset="100%" stop-color="#bfe6ff"/>
+        </radialGradient>
+      </defs>
+      <path d="M80 24 C62 18 46 28 34 44 C22 62 28 86 38 100 C52 118 72 130 92 132 C112 134 130 124 140 110 C150 96 146 80 136 62 C126 44 108 30 92 26 C86 24 82 24 80 24 Z" fill="url(#mg3)" stroke="#6fbff8" stroke-width="2"/>
+      <g stroke="#6fbff8" stroke-width="3" stroke-linecap="round">
+        <path d="M50 52 q-12 6 -18 18" fill="none"/>
+        <path d="M110 50 q18 10 24 24" fill="none"/>
+      </g>
+      <g transform="translate(50,62)">
+        <ellipse cx="22" cy="18" rx="20" ry="16" fill="#f7fdff" opacity="0.95" stroke="#e6f9ff" stroke-width="1"/>
+        <ellipse cx="38" cy="34" rx="16" ry="12" fill="#f7fdff" opacity="0.95" stroke="#e6f9ff" stroke-width="1"/>
+      </g>
+    </svg>
+  </div>
+  <div class="mega m4" aria-hidden="true">
+    <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="megakaryocyte">
+      <defs>
+        <radialGradient id="mg4" cx="50%" cy="40%">
+          <stop offset="0%" stop-color="#fff0f8"/>
+          <stop offset="60%" stop-color="#ffd6f0"/>
+          <stop offset="100%" stop-color="#ffb0e0"/>
+        </radialGradient>
+      </defs>
+      <path d="M80 20 C62 22 46 36 36 54 C24 74 30 96 42 110 C56 126 76 136 98 136 C120 136 136 124 146 104 C154 86 150 68 140 54 C128 38 108 26 92 22 C86 20 82 20 80 20 Z" fill="url(#mg4)" stroke="#ff8ab0" stroke-width="2"/>
+      <g stroke="#ff8ab0" stroke-width="3" stroke-linecap="round">
+        <path d="M46 56 q-14 8 -20 20" fill="none"/>
+        <path d="M116 54 q20 12 26 26" fill="none"/>
+      </g>
+      <g transform="translate(52,58)">
+        <ellipse cx="20" cy="14" rx="18" ry="14" fill="#fff8fb" opacity="0.95" stroke="#fff0f6" stroke-width="1"/>
+        <ellipse cx="36" cy="30" rx="20" ry="16" fill="#fff8fb" opacity="0.95" stroke="#fff0f6" stroke-width="1"/>
+        <ellipse cx="28" cy="38" rx="14" ry="10" fill="#fff8fb" opacity="0.95" stroke="#fff0f6" stroke-width="1"/>
+      </g>
+    </svg>
+  </div>
+  <div class="mega m5" aria-hidden="true">
+    <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="megakaryocyte">
+      <defs>
+        <radialGradient id="mg5" cx="50%" cy="40%">
+          <stop offset="0%" stop-color="#fffbe6"/>
+          <stop offset="60%" stop-color="#fff2c2"/>
+          <stop offset="100%" stop-color="#ffe89a"/>
+        </radialGradient>
+      </defs>
+      <path d="M80 26 C64 22 50 36 38 52 C26 70 28 92 42 108 C56 126 78 134 98 132 C120 130 134 118 146 100 C154 82 150 66 138 50 C126 36 108 28 92 26 C86 26 82 26 80 26 Z" fill="url(#mg5)" stroke="#ffd166" stroke-width="2"/>
+      <g stroke="#ffd166" stroke-width="3" stroke-linecap="round">
+        <path d="M46 58 q-12 8 -18 20" fill="none"/>
+        <path d="M114 56 q18 12 24 26" fill="none"/>
+      </g>
+      <g transform="translate(50,60)">
+        <ellipse cx="20" cy="16" rx="18" ry="14" fill="#fffdf2" opacity="0.95" stroke="#fff7d8" stroke-width="1"/>
+        <ellipse cx="36" cy="32" rx="20" ry="16" fill="#fffdf2" opacity="0.95" stroke="#fff7d8" stroke-width="1"/>
+      </g>
+    </svg>
+  </div>
+  <div class="mega m6" aria-hidden="true">
+    <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="megakaryocyte">
+      <defs>
+        <radialGradient id="mg6" cx="50%" cy="40%">
+          <stop offset="0%" stop-color="#e6fff0"/>
+          <stop offset="60%" stop-color="#c6ffe0"/>
+          <stop offset="100%" stop-color="#9ef0c4"/>
+        </radialGradient>
+      </defs>
+      <path d="M80 22 C64 20 48 30 36 46 C22 66 28 90 44 106 C60 124 82 134 102 134 C122 134 140 122 150 104 C158 86 156 68 146 52 C134 36 114 26 96 22 C90 20 84 22 80 22 Z" fill="url(#mg6)" stroke="#6be6a1" stroke-width="2"/>
+      <g stroke="#6be6a1" stroke-width="3" stroke-linecap="round">
+        <path d="M46 54 q-10 8 -16 20" fill="none"/>
+        <path d="M116 52 q18 12 22 26" fill="none"/>
+      </g>
+      <g transform="translate(52,60)">
+        <ellipse cx="22" cy="18" rx="20" ry="16" fill="#f3fff7" opacity="0.95" stroke="#eaffef" stroke-width="1"/>
+        <ellipse cx="38" cy="34" rx="16" ry="12" fill="#f3fff7" opacity="0.95" stroke="#eaffef" stroke-width="1"/>
+      </g>
+    </svg>
+  </div>
+</div>
+
+<div class="confetti" id="confetti"></div>
+
+<div class="wrap">
+  <header>
+    <div class="logo">🎅</div>
+    <div>
+      <h1>HSCB lab Christmas Connections</h1>
+      <div class="subtitle">Option A1 — submit group items; correct groups show the category name</div>
+    </div>
+  </header>
+
+  <div class="board">
+    <div class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div><strong>Tiles</strong></div>
+        <div class="small">Drag or click to move</div>
+    
+      </div>
+      <div id="tiles" class="tiles"></div>
+      <div class="controls">
+        <button id="shuffleBtn">🔀 Shuffle</button>
+        <button id="resetBtn" class="secondary">♻️ Reset</button>
+        <button id="revealBtn" class="secondary">✨ Reveal all</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div><strong>Groups — submit to check</strong></div>
+      </div>
+      <div class="bins" id="bins"></div>
+      <div id="resultArea"></div>
+    </div>
+  </div>
+  <footer style="margin-top:14px">Made with 🎄 by ChatGPT & HSCB lab</footer>
+</div>
+
+<script>
+const ITEMS = [
+  "Merton","Keble","Wolfson","Queens",
+  "Bodleian Library","Sheldonian","Clarendon Building","Radcliffe Camera",
+  "Sleigh","Sack","Reindeer","Bells",
+  "Mistletoe","Tinsel","Baubles","Star"
+];
+
+const SOLUTIONS = [
+  ["Merton","Keble","Wolfson","Queens"],
+  ["Bodleian Library","Sheldonian","Clarendon Building","Radcliffe Camera"],
+  ["Sleigh","Sack","Reindeer","Bells"],
+  ["Mistletoe","Tinsel","Baubles","Star"]
+];
+
+const CATEGORY_NAMES = [
+  "Oxford Colleges",
+  "Oxford Buildings",
+  "Santa's kit",
+  "Decorations"
+];
+
+let state = { tiles: [], bins: [[],[],[],[]], solved: [false,false,false,false] };
+
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]] } return a; }
+
+function renderTiles(){
+  const c=document.getElementById('tiles'); c.innerHTML='';
+  state.tiles.forEach(t=>{
+    const el=document.createElement('div');
+    el.className='tile'; el.textContent=t; el.draggable=true;
+    el.addEventListener('dragstart',e=>e.dataTransfer.setData('text/plain',t));
+    el.addEventListener('click',()=>{ /* click moves back? optional */ });
+    c.appendChild(el);
+  });
+}
+
+function renderBins(){
+  const bins=document.getElementById('bins'); bins.innerHTML='';
+  for(let b=0;b<4;b++){
+    const wrap=document.createElement('div')
+    wrap.style.display='flex'; wrap.style.flexDirection='column';
+
+    const label=document.createElement('div');
+    label.className='bin-label'; label.textContent='Group '+(b+1);
+
+    const bin=document.createElement('div');
+    bin.className='bin'; if(state.solved[b]) bin.classList.add('solved');
+    bin.addEventListener('dragover',e=>e.preventDefault());
+    bin.addEventListener('drop',e=>{ const name=e.dataTransfer.getData('text/plain'); moveToBin(name,b); });
+    bin.addEventListener('click',e=>{ if(e.target.classList.contains('tile')) removeFromBin(e.target.textContent); });
+
+    state.bins[b].forEach(name=>{
+      const t=document.createElement('div'); t.className='tile'; t.textContent=name; t.draggable=true;
+      t.addEventListener('dragstart',e=>e.dataTransfer.setData('text/plain',name));
+      bin.appendChild(t);
+    });
+
+    const submit=document.createElement('button');
+    submit.textContent='Submit Group';
+    submit.style.marginTop='8px';
+    submit.onclick=()=>submitGroup(b);
+
+    const solvedMsg=document.createElement('div');
+    solvedMsg.style.marginTop='8px'; solvedMsg.style.fontWeight='700'; solvedMsg.style.color='#d1ffd6';
+    if(state.solved[b]) solvedMsg.textContent='Solved: '+CATEGORY_NAMES[b];
+
+    wrap.appendChild(label); wrap.appendChild(bin); wrap.appendChild(submit); wrap.appendChild(solvedMsg);
+    bins.appendChild(wrap);
+  }
+}
+
+function moveToBin(name,b){
+  if(state.solved[b]) return;
+  const idx=state.tiles.indexOf(name);
+  if(idx>-1) state.tiles.splice(idx,1);
+  state.bins.forEach(ar=>{ const i=ar.indexOf(name); if(i>-1) ar.splice(i,1); });
+  state.bins[b].push(name); renderAll();
+}
+
+function removeFromBin(name){
+  state.bins.forEach(ar=>{ const i=ar.indexOf(name); if(i>-1){ ar.splice(i,1); state.tiles.push(name); } });
+  renderAll();
+}
+
+function renderAll(){ renderTiles(); renderBins(); document.getElementById('resultArea').innerHTML=''; }
+
+function checkGroupItems(b){
+  const got=[...state.bins[b]].sort().join('|');
+  for(let i=0;i<4;i++){ if(state.solved[i]) continue; const want=[...SOLUTIONS[i]].sort().join('|'); if(got===want) return i; }
+  return -1;
+}
+
+function submitGroup(b){
+  if(state.solved[b]){ alert('Already solved'); return; }
+  if(state.bins[b].length!==4){ alert('Place 4 items first'); return; }
+  const match=checkGroupItems(b);
+  if(match===-1){ showResult('Incorrect set — try again', false); return; }
+  lockGroup(b,match);
+  showResult('Correct! Group '+(b+1)+': '+CATEGORY_NAMES[match], true);
+  if(state.solved.every(Boolean)) finalSuccess();
+}
+
+function lockGroup(binIndex, solIndex){
+  state.solved[solIndex]=true;
+  state.bins[solIndex]=[...SOLUTIONS[solIndex]];
+  state.tiles = state.tiles.filter(x=>!SOLUTIONS[solIndex].includes(x));
+  state.bins.forEach((ar,i)=>{ if(i!==solIndex){ state.bins[i]=ar.filter(x=>!SOLUTIONS[solIndex].includes(x)); } });
+  renderAll();
+}
+
+function showResult(msg,ok){ const area=document.getElementById('resultArea'); area.innerHTML=''; const d=document.createElement('div'); d.className='result '+(ok?'correct':'wrong'); d.textContent=msg; area.appendChild(d); }
+
+function confettiBurst(){ const box=document.getElementById('confetti'); for(let i=0;i<80;i++){ const c=document.createElement('span'); c.style.left=Math.random()*100+'%'; c.style.background='hsl('+Math.random()*360+',80%,60%)'; c.style.animationDelay=(Math.random()*0.5)+'s'; box.appendChild(c); setTimeout(()=>{ if(box.contains(c)) box.removeChild(c); },1500); } }
+
+function finalSuccess(){ showResult('All groups solved — brilliant! 🎉', true); confettiBurst(); }
+
+document.getElementById('shuffleBtn').onclick=()=>{ reset(); shuffle(state.tiles); renderAll(); }
+document.getElementById('resetBtn').onclick=reset;
+document.getElementById('revealBtn').onclick=()=>{ state.solved=[true,true,true,true]; state.bins=SOLUTIONS.map(a=>[...a]); state.tiles=[]; renderAll(); finalSuccess(); };
+
+function reset(){ state.tiles=[...ITEMS]; state.bins=[[],[],[],[]]; state.solved=[false,false,false,false]; renderAll(); }
+
+reset();
+</script>
+</body>
+</html>
